@@ -1,9 +1,12 @@
 package com.edutech.progressive.service.impl;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.edutech.progressive.entity.Cricketer;
@@ -11,43 +14,52 @@ import com.edutech.progressive.repository.CricketerRepository;
 import com.edutech.progressive.service.CricketerService;
 
 @Service
-public class CricketerServiceImplJpa implements CricketerService{
-    List<Cricketer> cricketers = new ArrayList<>();
+@Primary
+public class CricketerServiceImplJpa implements CricketerService {
 
-    private CricketerRepository cricketerRepository;
-    
-   public CricketerServiceImplJpa(CricketerRepository cricketerRepository) {
+    private final CricketerRepository cricketerRepository;
+
+    @Autowired
+    public CricketerServiceImplJpa(CricketerRepository cricketerRepository) {
         this.cricketerRepository = cricketerRepository;
     }
 
-   public List<Cricketer> getAllCricketers() throws SQLException{
-    return cricketers;
-   }
-
-    public Integer addCricketer(Cricketer cricketer) throws SQLException{
-        return -1;
+    @Override
+    public List<Cricketer> getAllCricketers() throws SQLException {
+        return cricketerRepository.findAll();
     }
 
-   public List<Cricketer> getAllCricketersSortedByExperience() throws SQLException{
-    return cricketers;
-   }
-
-   
-    public void updateCricketer(Cricketer cricketer) throws SQLException{
-
+    @Override
+    public Integer addCricketer(Cricketer cricketer) throws SQLException {
+        Cricketer savedCricketer = cricketerRepository.save(cricketer);
+        return savedCricketer.getCricketerId();
     }
 
-    public void deleteCricketer(int cricketerId) throws SQLException{
-
+    @Override
+    public List<Cricketer> getAllCricketersSortedByExperience() throws SQLException {
+        return cricketerRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(Cricketer::getExperience))
+                .collect(Collectors.toList());
     }
 
-    public Cricketer getCricketerById(int cricketerId)throws SQLException {
-        return null;
+    @Override
+    public void updateCricketer(Cricketer cricketer) throws SQLException {
+        cricketerRepository.save(cricketer);
     }
 
-    
+    @Override
+    public void deleteCricketer(int cricketerId) throws SQLException {
+        cricketerRepository.deleteById(cricketerId);
+    }
+
+    @Override
+    public Cricketer getCricketerById(int cricketerId) throws SQLException {
+        return cricketerRepository.findByCricketerId(cricketerId);
+    }
+
+    @Override
     public List<Cricketer> getCricketersByTeam(int teamId) throws SQLException {
-        return null;
+        return cricketerRepository.findByTeam_TeamId(teamId);
     }
-    
 }

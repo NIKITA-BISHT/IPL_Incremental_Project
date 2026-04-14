@@ -1,94 +1,116 @@
 package com.edutech.progressive.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import com.edutech.progressive.config.DatabaseConnectionManager;
+import com.edutech.progressive.entity.Team;
+import org.springframework.stereotype.Repository;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.edutech.progressive.config.DatabaseConnectionManager;
-import com.edutech.progressive.entity.Team;
+@Repository
+public class TeamDAOImpl implements TeamDAO {
 
-public class TeamDAOImpl implements TeamDAO  {
-
-     Connection conn;
-    
-    public TeamDAOImpl() throws SQLException {
-        this.conn = DatabaseConnectionManager.getConnection();
-    }
     @Override
     public int addTeam(Team team) throws SQLException {
-        String sql = "insert into team (team_name,location,owner_name,establishment_year) values(?,?,?,?)";
-        int count = -1;
-            PreparedStatement ps = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, team.getTeamName());
-            ps.setString(2, team.getLocation());
-            ps.setString(3,  team.getOwnerName());
-            ps.setInt(4, team.getEstablishmentYear());
-            count = ps.executeUpdate();
-              if(count>0)
-                {
-               ResultSet rs = ps.getGeneratedKeys();
-           if(rs.next())
-           {
-             team.setTeamId(rs.getInt(1));
-             return rs.getInt(1);
+        String sql = "INSERT INTO team (team_name, location, owner_name, establishment_year) VALUES (?, ?, ?, ?)";
 
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            statement.setString(1, team.getTeamName());
+            statement.setString(2, team.getLocation());
+            statement.setString(3, team.getOwnerName());
+            statement.setInt(4, team.getEstablishmentYear());
+
+            statement.executeUpdate();
+
+            try (ResultSet resultSet = statement.getGeneratedKeys()) {
+                if (resultSet.next()) {
+                    int generatedID = resultSet.getInt(1);
+                    team.setTeamId(generatedID);
+                    return generatedID;
+                }
             }
         }
-        return count;
+
+        return -1;
     }
 
     @Override
     public Team getTeamById(int teamId) throws SQLException {
-         String sql = "Select * from team where team_id=?";
-        Team team = null;
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, teamId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                team = new Team(rs.getInt("team_id"), rs.getString("team_name"), rs.getString("location"),
-                        rs.getString("owner_name"), rs.getInt("establishment_year"));
+        String sql = "SELECT * FROM team WHERE team_id = ?";
+
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, teamId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    Team team = new Team();
+                    team.setTeamId(teamId);
+                    team.setTeamName(resultSet.getString("team_name"));
+                    team.setLocation(resultSet.getString("location"));
+                    team.setOwnerName(resultSet.getString("owner_name"));
+                    team.setEstablishmentYear(resultSet.getInt("establishment_year"));
+                    return team;
+                }
             }
-        return team;
+        }
+
+        return null;
     }
 
     @Override
     public void updateTeam(Team team) throws SQLException {
-         String sql = "update team set team_name=?,location=?,owner_name=?,establishment_year=? where team_id=?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            // ps.setInt(1, team.getTeamId());
-            ps.setString(1, team.getTeamName());
-            ps.setString(2, team.getLocation());
-            ps.setString(3, team.getOwnerName());
-            ps.setInt(4, team.getEstablishmentYear());
-            ps.setInt(5, team.getTeamId());
-            ps.executeUpdate();
+        String sql = "UPDATE team SET team_name = ?, location = ?, owner_name = ?, establishment_year = ? WHERE team_id = ?";
+
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, team.getTeamName());
+            statement.setString(2, team.getLocation());
+            statement.setString(3, team.getOwnerName());
+            statement.setInt(4, team.getEstablishmentYear());
+            statement.setInt(5, team.getTeamId());
+
+            statement.executeUpdate();
+        }
     }
 
     @Override
     public void deleteTeam(int teamId) throws SQLException {
-          String sql = "delete from team where team_id=?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, teamId);
-            ps.executeUpdate();
+        String sql = "DELETE FROM team WHERE team_id = ?";
+
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, teamId);
+            statement.executeUpdate();
+        }
     }
 
     @Override
-    public List<Team> getAllTeams() throws SQLException{
-          List<Team> list = new ArrayList<>();
-       String sql = "select * from team";
-          PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                list.add(new Team(rs.getInt("team_id"),  rs.getString("team_name"), rs.getString("location"),
-                        rs.getString("owner_name"), rs.getInt("establishment_year")));
+    public List<Team> getAllTeams() throws SQLException {
+        List<Team> teams = new ArrayList<>();
+        String sql = "SELECT * FROM team";
+
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                Team team = new Team();
+                team.setTeamId(resultSet.getInt("team_id"));
+                team.setTeamName(resultSet.getString("team_name"));
+                team.setLocation(resultSet.getString("location"));
+                team.setOwnerName(resultSet.getString("owner_name"));
+                team.setEstablishmentYear(resultSet.getInt("establishment_year"));
+                teams.add(team);
             }
-       return list;
+        }
+
+        return teams;
     }
-
-
-
 }

@@ -1,42 +1,52 @@
 package com.edutech.progressive.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-import org.hibernate.annotations.CollectionId;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name="cricketer")
+@Table(name = "cricketer")
 public class Cricketer implements Comparable<Cricketer> {
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-@Column(name = "cricketer_id")
-private int cricketerId;
-@Column(name="team_id")
-private int teamId;
-@Column(name="cricketer_name")
-private String cricketerName;
-@Column(name="age")
-private int age;
-private String nationality;
-private int experience;
-private String role;
-@Column(name="total_runs")
-private int totalRuns;
-@Column(name="total_wickets")
-private int totalWickets;
 
-public Cricketer() {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cricketer_id")
+    private int cricketerId;
+
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    @JsonIgnoreProperties({
+            "cricketers",
+            "firstTeamMatches",
+            "secondTeamMatches",
+            "wonMatches"
+    })
+    private Team team;
+
+    @Column(name = "cricketer_name")
+    private String cricketerName;
+
+    @Column(name = "age")
+    private int age;
+
+    private String nationality;
+    private int experience;
+    private String role;
+
+    @Column(name = "total_runs")
+    private int totalRuns;
+
+    @Column(name = "total_wickets")
+    private int totalWickets;
+
+    public Cricketer() {
     }
 
-    public Cricketer(int cricketerId, int teamId, String cricketerName, int age, String nationality, int experience,
+    // Day-7 native constructor using Team object
+    public Cricketer(int cricketerId, Team team, String cricketerName, int age, String nationality, int experience,
             String role, int totalRuns, int totalWickets) {
         this.cricketerId = cricketerId;
-        this.teamId = teamId;
+        this.team = team;
         this.cricketerName = cricketerName;
         this.age = age;
         this.nationality = nationality;
@@ -44,6 +54,20 @@ public Cricketer() {
         this.role = role;
         this.totalRuns = totalRuns;
         this.totalWickets = totalWickets;
+    }
+
+    // Compatibility constructor to support older code using teamId
+    public Cricketer(int cricketerId, int teamId, String cricketerName, int age, String nationality, int experience,
+            String role, int totalRuns, int totalWickets) {
+        this.cricketerId = cricketerId;
+        this.cricketerName = cricketerName;
+        this.age = age;
+        this.nationality = nationality;
+        this.experience = experience;
+        this.role = role;
+        this.totalRuns = totalRuns;
+        this.totalWickets = totalWickets;
+        setTeamId(teamId);
     }
 
     public int getCricketerId() {
@@ -54,12 +78,25 @@ public Cricketer() {
         this.cricketerId = cricketerId;
     }
 
-    public int getTeamId() {
-        return teamId;
+    public Team getTeam() {
+        return team;
     }
 
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    // Compatibility getter for old code/tests
+    public int getTeamId() {
+        return (team != null) ? team.getTeamId() : 0;
+    }
+
+    // Compatibility setter for old code/tests
     public void setTeamId(int teamId) {
-        this.teamId = teamId;
+        if (this.team == null) {
+            this.team = new Team();
+        }
+        this.team.setTeamId(teamId);
     }
 
     public String getCricketerName() {
@@ -120,7 +157,6 @@ public Cricketer() {
 
     @Override
     public int compareTo(Cricketer o) {
-        return Integer.compare(this.getExperience(),o.getExperience());
+        return Integer.compare(this.getExperience(), o.getExperience());
     }
-
 }
