@@ -2,26 +2,26 @@ package com.edutech.progressive.service;
 
 import com.edutech.progressive.entity.Team;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface TeamService {
+    List<Team> getAllTeams()throws SQLException;
 
-    List<Team> getAllTeams();
+    int addTeam(Team team)throws SQLException;
 
-    int addTeam(Team team);
+    List<Team> getAllTeamsSortedByName()throws SQLException;
 
-    List<Team> getAllTeamsSortedByName();
-
-    default void emptyArrayList() {
+    default void emptyArrayList() throws SQLException{
     }
 
     //Do not implement these methods in TeamServiceImplArrayList.java class
-    default Team getTeamById(int teamId) {
+    default Team getTeamById(int teamId) throws SQLException{
         return null;
     }
 
-    default void updateTeam(Team team) {}
+    default void updateTeam(Team team, int teamId) throws SQLException{}
 
-    default void deleteTeam(int teamId) {}
+    default void deleteTeam(int teamId)throws SQLException {}
 
 }

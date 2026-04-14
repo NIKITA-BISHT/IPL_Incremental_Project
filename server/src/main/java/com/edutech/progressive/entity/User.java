@@ -1,21 +1,32 @@
 package com.edutech.progressive.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="user")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private int userId;
+    @Column(name = "full_name")
     private String fullName;
-    private String userName;
+    @Column(name="username")
+    private String username;
     private String password;
     private String email;
     private String role;
     public User() {
     }
-    public User(int userId, String fullName, String userName, String password, String email, String role) {
+    public User(int userId, String fullNamee, String username, String password, String email, String role) {
         this.userId = userId;
-        this.fullName = fullName;
-        this.userName = userName;
+        this.fullName = fullNamee;
+        this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
@@ -26,17 +37,17 @@ public class User {
     public void setUserId(int userId) {
         this.userId = userId;
     }
-    public String getFullName() {
+    public String getFullNamee() {
         return fullName;
     }
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setFullNamee(String fullNamee) {
+        this.fullName = fullNamee;
     }
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
     public String getPassword() {
         return password;
@@ -56,5 +67,5 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
-
+    
 }
