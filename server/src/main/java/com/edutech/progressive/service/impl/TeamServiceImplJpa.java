@@ -7,6 +7,7 @@ import com.edutech.progressive.exception.TeamDoesNotExistException;
 import com.edutech.progressive.repository.CricketerRepository;
 import com.edutech.progressive.repository.MatchRepository;
 import com.edutech.progressive.repository.TeamRepository;
+import com.edutech.progressive.repository.TicketBookingRepository;
 import com.edutech.progressive.repository.VoteRepository;
 import com.edutech.progressive.service.TeamService;
 
@@ -33,6 +34,9 @@ public class TeamServiceImplJpa implements TeamService {
 
     @Autowired
     private VoteRepository voteRepository;
+
+    @Autowired
+    private TicketBookingRepository ticketBookingRepository;
 
     public TeamServiceImplJpa() {
     }
@@ -94,6 +98,7 @@ public class TeamServiceImplJpa implements TeamService {
             voteRepository.deleteByCricketerId(cricketer.getCricketerId());
         }
 
+        ticketBookingRepository.deleteByTeamId(teamId);
         matchRepository.deleteByTeamId(teamId);
         cricketerRepository.deleteByTeamId(teamId);
         teamRepository.deleteById(teamId);
