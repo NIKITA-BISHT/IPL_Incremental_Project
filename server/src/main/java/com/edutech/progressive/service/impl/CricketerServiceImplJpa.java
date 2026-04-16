@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import com.edutech.progressive.entity.Cricketer;
+import com.edutech.progressive.exception.TeamCricketerLimitExceededException;
 import com.edutech.progressive.repository.CricketerRepository;
 import com.edutech.progressive.service.CricketerService;
 
@@ -31,8 +32,11 @@ public class CricketerServiceImplJpa implements CricketerService {
 
     @Override
     public Integer addCricketer(Cricketer cricketer) throws SQLException {
-        Cricketer savedCricketer = cricketerRepository.save(cricketer);
-        return savedCricketer.getCricketerId();
+        Long totalCricketersInTeam = cricketerRepository.countByTeam_TeamId(cricketer.getTeam().getTeamId());
+        if (totalCricketersInTeam == 11) {
+            throw new TeamCricketerLimitExceededException("Team = " + cricketer.getTeam().getTeamId() + " already has reached its maximum limit of 11 cricketers");
+        }
+        return cricketerRepository.save(cricketer).getCricketerId();
     }
 
     @Override

@@ -10,8 +10,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "team")
+@JsonIgnoreProperties({"cricketers", "firstTeamMatches", "secondTeamMatches", "wonMatches"})
 public class Team implements Comparable<Team> {
 
     @Id
