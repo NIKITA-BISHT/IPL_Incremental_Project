@@ -9,7 +9,7 @@ import com.edutech.progressive.dao.MatchDAO;
 import com.edutech.progressive.entity.Match;
 import com.edutech.progressive.service.MatchService;
 
-
+@Service
 public class MatchServiceImplJdbc implements MatchService {
 
    
