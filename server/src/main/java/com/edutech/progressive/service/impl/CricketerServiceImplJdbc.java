@@ -11,7 +11,7 @@ import com.edutech.progressive.dao.CricketerDAO;
 import com.edutech.progressive.entity.Cricketer;
 import com.edutech.progressive.service.CricketerService;
 
-@Service
+
 public class CricketerServiceImplJdbc implements CricketerService  {
 
     public CricketerServiceImplJdbc() {

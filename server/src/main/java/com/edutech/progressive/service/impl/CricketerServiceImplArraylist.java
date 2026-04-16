@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.edutech.progressive.entity.Cricketer;
 import com.edutech.progressive.service.CricketerService;
 
-@Service
+
 public class CricketerServiceImplArraylist implements CricketerService {
 
     List<Cricketer> cricketers = new ArrayList<>();

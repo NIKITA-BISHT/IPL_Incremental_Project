@@ -15,7 +15,7 @@ import com.edutech.progressive.service.CricketerService;
 @RequestMapping("/cricketer")
 public class CricketerController {
 
-    private final CricketerService cricketerService;
+    private CricketerService cricketerService;
 
     @Autowired
     public CricketerController(CricketerService cricketerService) {
