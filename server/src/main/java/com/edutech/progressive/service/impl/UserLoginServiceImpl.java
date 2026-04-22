@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -19,6 +20,9 @@ public class UserLoginServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UserLoginServiceImpl() {
     }
@@ -36,10 +40,24 @@ public class UserLoginServiceImpl implements UserDetailsService {
     }
 
     public User createUser(User user) {
+        User existingByUsername = userRepository.findByUsername(user.getUsername());
+        if (existingByUsername != null) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        User existingByEmail = userRepository.findByEmail(user.getEmail());
+        if (existingByEmail != null) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
     public User updateUser(User user) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         return userRepository.save(user);
     }
 

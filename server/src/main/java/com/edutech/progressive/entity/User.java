@@ -40,8 +40,8 @@ public class User {
     public String getFullNamee() {
         return fullName;
     }
-    public void setFullNamee(String fullNamee) {
-        this.fullName = fullNamee;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
     public String getUsername() {
         return username;

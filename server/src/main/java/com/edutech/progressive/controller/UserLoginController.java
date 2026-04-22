@@ -1,9 +1,7 @@
 package com.edutech.progressive.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.edutech.progressive.dto.LoginRequest;
+import com.edutech.progressive.dto.LoginResponse;
 import com.edutech.progressive.entity.User;
 import com.edutech.progressive.jwt.JwtUtil;
 import com.edutech.progressive.service.impl.UserLoginServiceImpl;
@@ -19,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/user")
 public class UserLoginController {
 
     @Autowired
-    private UserLoginServiceImpl userLoginServiceImpl;
+    private UserLoginServiceImpl userLoginService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -32,12 +30,12 @@ public class UserLoginController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
-            User savedUser = userLoginServiceImpl.createUser(user);
-            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+            User savedUser = userLoginService.createUser(user);
+            return new ResponseEntity<>(savedUser, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
     }
 
@@ -51,12 +49,12 @@ public class UserLoginController {
                     )
             );
 
+            User user = userLoginService.getUserByUsername(loginRequest.getUsername());
             String token = jwtUtil.generateToken(loginRequest.getUsername());
 
-            Map<String, String> response = new HashMap<>();
-            response.put("token", token);
+            LoginResponse loginResponse = new LoginResponse(token,user.getRole(),user.getUserId());
 
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(loginResponse, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
