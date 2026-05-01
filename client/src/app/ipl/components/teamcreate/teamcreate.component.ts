@@ -1,42 +1,55 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-teamcreate',
+  selector: 'app-team-create',
   templateUrl: './teamcreate.component.html',
   styleUrls: ['./teamcreate.component.scss']
 })
-export class TeamCreateComponent implements OnInit {
+export class TeamCreateComponent {
+  teamForm: FormGroup;
+  successMessage = '';
+  errorMessage = '';
 
-  teamForm!: FormGroup;
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
-  currentYear = new Date().getFullYear();
-
-  constructor(private fb: FormBuilder) {}
-
-  ngOnInit(): void {
+  constructor(private fb: FormBuilder) {
     this.teamForm = this.fb.group({
       teamId: [null, Validators.required],
-      teamName: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9 ]+$/)]],
+      teamName: ['', [
+        Validators.required,
+        Validators.pattern('^[a-zA-Z ]+$')   // no special characters
+      ]],
       location: ['', Validators.required],
-      ownerName: ['', [Validators.required, Validators.minLength(2)]],
+      ownerName: ['', Validators.required],
       establishmentYear: [
-        this.currentYear,
-        [Validators.required, Validators.min(1900), Validators.max(this.currentYear)]
+        new Date().getFullYear(),
+        [Validators.required, Validators.min(1800), Validators.max(new Date().getFullYear())]
       ]
     });
   }
 
   onSubmit(): void {
     if (this.teamForm.valid) {
-      this.successMessage = 'Team has been successfully created!';
-      this.errorMessage = null;
+
+      if (this.simulateBackendError()) {
+        this.errorMessage = 'Backend validation failed.';
+        this.successMessage = '';
+        return;
+      }
+
+      console.log(this.teamForm.value);
+      this.successMessage = 'Team created successfully';
+      this.errorMessage = '';
       this.resetForm();
+
     } else {
       this.errorMessage = 'Please fill out all required fields correctly.';
-      this.successMessage = null;
+      this.successMessage = '';
+      this.teamForm.markAllAsTouched();
     }
+  }
+
+  simulateBackendError(): boolean {
+    return this.teamForm.value.teamName === 'InvalidTeam';
   }
 
   resetForm(): void {
@@ -45,7 +58,7 @@ export class TeamCreateComponent implements OnInit {
       teamName: '',
       location: '',
       ownerName: '',
-      establishmentYear: this.currentYear
+      establishmentYear: new Date().getFullYear()
     });
   }
 }

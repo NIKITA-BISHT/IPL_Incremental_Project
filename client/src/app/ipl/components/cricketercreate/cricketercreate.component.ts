@@ -1,57 +1,65 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Team } from '../../types/Team';
 import { Cricketer } from '../../types/Cricketer';
 
 @Component({
-  selector: 'app-cricketercreate',
+  selector: 'app-cricketer-create',
   templateUrl: './cricketercreate.component.html',
   styleUrls: ['./cricketercreate.component.scss']
 })
-export class CricketerCreateComponent implements OnInit {
+export class CricketerCreateComponent {
 
-  cricketerForm!: FormGroup;
+  cricketerForm: FormGroup;
+  successMessage = '';
+  errorMessage = '';
+
+
   cricketer: Cricketer | null = null;
 
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
-
-  teams: Team[] = [];
-
-  constructor(private fb: FormBuilder) {}
-
-  ngOnInit(): void {
-    this.teams = [
-      { teamId: 101, teamName: 'India' } as Team
-    ];
-
+  constructor(private fb: FormBuilder) {
+    
     this.cricketerForm = this.fb.group({
       cricketerId: [null, Validators.required],
       teamId: [null, Validators.required],
       cricketerName: ['', Validators.required],
-      age: [null, [Validators.required, Validators.min(18)]],
+      age: [null, Validators.required],
       nationality: ['', Validators.required],
-      experience: [null, [Validators.required, Validators.min(0)]],
+     experience: [0, [Validators.required, Validators.min(0)]],
       role: ['', Validators.required],
-      totalRuns: [0, Validators.min(0)],
-      totalWickets: [0, Validators.min(0)]
+      totalRuns: [null, Validators.required],
+      totalWickets: [null, Validators.required]
     });
+
+     this.cricketerForm.get('experience')?.updateValueAndValidity();
   }
+
+  
 
   onSubmit(): void {
     if (this.cricketerForm.valid) {
-      // ✅ REQUIRED FOR AUTO‑TEST
-      this.cricketer = { ...this.cricketerForm.value };
+      const v = this.cricketerForm.value;
 
-      console.log('Cricketer Data:', this.cricketer);
+      this.cricketer = new Cricketer(
+        v.cricketerId,
+        v.teamId,
+        v.cricketerName,
+        v.age,
+        v.nationality,
+        v.experience,
+        v.role,
+        v.totalRuns,
+        v.totalWickets
+      );
 
+      console.log(this.cricketerForm.value);
+
+      
       this.successMessage = 'Cricketer created successfully!';
-      this.errorMessage = null;
-
-      this.resetForm();
+      this.errorMessage = '';
     } else {
-      this.errorMessage = 'Please fill all required fields correctly.';
-      this.successMessage = null;
+      this.errorMessage = 'Please fill all required fields';
+      this.successMessage = '';
+      this.cricketerForm.markAllAsTouched();
     }
   }
 
@@ -64,8 +72,12 @@ export class CricketerCreateComponent implements OnInit {
       nationality: '',
       experience: null,
       role: '',
-      totalRuns: 0,
-      totalWickets: 0
+      totalRuns: null,
+      totalWickets: null
     });
+
+    this.cricketer = null;
+    this.successMessage = '';
+    this.errorMessage = '';
   }
 }
