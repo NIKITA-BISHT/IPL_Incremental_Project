@@ -1,0 +1,69 @@
+<app-navbar></app-navbar>
+
+<div class="dashboard-container">
+  <h2>IPL Dashboard</h2>
+
+  <section>
+    <h3>Teams</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Team ID</th>
+          <th>Team Name</th>
+          <th>Location</th>
+          <th>Owner</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let team of teams">
+          <td>{{ team.teamId }}</td>
+          <td>{{ team.teamName }}</td>
+          <td>{{ team.location }}</td>
+          <td>{{ team.ownerName }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h3>Cricketers</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Cricketer ID</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Team</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cricketer of cricketers">
+          <td>{{ cricketer.cricketerId }}</td>
+          <td>{{ cricketer.cricketerName }}</td>
+          <td>{{ cricketer.age }}</td>
+          <td>{{ cricketer.team?.teamName || cricketer.teamId }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h3>Matches</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Match ID</th>
+          <th>Date</th>
+          <th>Venue</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let match of matches">
+          <td>{{ match.matchId }}</td>
+          <td>{{ match.matchDate | date }}</td>
+          <td>{{ match.venue }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+</div>

@@ -1,49 +1,62 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
-  selector: 'app-registration',
-  templateUrl: './registration.component.html',
-  styleUrls: ['./registration.component.scss']
+  selector: "app-registration",
+  templateUrl: "./registration.component.html",
+  styleUrls: ["./registration.component.scss"]
 })
-export class RegistrationComponent {
+export class RegistrationComponent implements OnInit {
+  registrationForm!: FormGroup;
+  successMessage: string = "";
+  errorMessage: string = "";
 
-  registrationForm: FormGroup;
-  successMessage = '';
-  errorMessage = '';
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService
+  ) {}
 
-  constructor(private fb: FormBuilder) {
+  ngOnInit(): void {
     this.registrationForm = this.fb.group({
-      fullName: ['', Validators.required],
-      username: ['', [
-        Validators.required,
-        Validators.pattern('^[a-zA-Z0-9]+$')
-      ]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.pattern('^(?=.*[A-Z])(?=.*[0-9]).+$')
-      ]]
+      fullName: ["", Validators.required],
+      username: ["", [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)]],
+      email: ["", [Validators.required, Validators.email]],
+      password: ["", [Validators.required, Validators.pattern(/^(?=.*[A-Z])(?=.*\d).{8,}$/)]]
     });
   }
 
   onSubmit(): void {
-    if (this.registrationForm.valid) {
-      console.log(this.registrationForm.value);
-      this.successMessage = 'Registration successful!';
-      this.errorMessage = '';
-      this.registrationForm.reset();
-    } else {
-      this.errorMessage = 'Please fill out all required fields correctly.';
-      this.successMessage = '';
+    this.successMessage = "";
+    this.errorMessage = "";
+
+    if (this.registrationForm.invalid) {
+      this.errorMessage = "Please fill out all required fields correctly.";
       this.registrationForm.markAllAsTouched();
+      return;
     }
+
+    this.authService.createUser(this.registrationForm.value).subscribe({
+      next: () => {
+        this.successMessage = "Registration successful!";
+        this.resetForm();
+        this.successMessage = "Registration successful!";
+      },
+      error: (error) => {
+        this.errorMessage =
+          error?.error?.message || "Please fill out all required fields correctly.";
+      }
+    });
   }
 
   resetForm(): void {
-    this.registrationForm.reset();
-    this.successMessage = '';
-    this.errorMessage = '';
+    this.registrationForm.reset({
+      fullName: "",
+      username: "",
+      email: "",
+      password: ""
+    });
+
+    this.errorMessage = "";
   }
 }
