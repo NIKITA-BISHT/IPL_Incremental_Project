@@ -23,14 +23,17 @@ export class MatchCreateComponent implements OnInit {
       secondTeamId: ["", Validators.required],
       matchDate: ["", Validators.required],
       venue: ["", Validators.required],
-      result: ["", Validators.required],
       status: ["", Validators.required],
-      winnerTeamId: ["", Validators.required]
+
+      // Not required for upcoming matches
+      result: [""],
+      winnerTeamId: [""]
     });
   }
 
   ngOnInit(): void {
     this.loadTeams();
+    this.applyStatusValidation();
   }
 
   loadTeams(): void {
@@ -41,6 +44,27 @@ export class MatchCreateComponent implements OnInit {
       error: () => {
         this.teams = [];
       }
+    });
+  }
+
+  applyStatusValidation(): void {
+    this.matchForm.get("status")?.valueChanges.subscribe((status) => {
+      const resultControl = this.matchForm.get("result");
+      const winnerTeamControl = this.matchForm.get("winnerTeamId");
+
+      resultControl?.clearValidators();
+      winnerTeamControl?.clearValidators();
+
+      if (status === "Played") {
+        resultControl?.setValidators([Validators.required]);
+        winnerTeamControl?.setValidators([Validators.required]);
+      } else if (status === "Upcoming") {
+        resultControl?.setValue("");
+        winnerTeamControl?.setValue("");
+      }
+
+      resultControl?.updateValueAndValidity();
+      winnerTeamControl?.updateValueAndValidity();
     });
   }
 
@@ -60,12 +84,30 @@ export class MatchCreateComponent implements OnInit {
   addMatch(): void {
     const value = this.matchForm.value;
 
-    const firstTeam = this.teams.find((team) => team.teamId === Number(value.firstTeamId));
-    const secondTeam = this.teams.find((team) => team.teamId === Number(value.secondTeamId));
-    const winnerTeam = this.teams.find((team) => team.teamId === Number(value.winnerTeamId));
+    const firstTeam = this.teams.find(
+      (team) => team.teamId === Number(value.firstTeamId)
+    );
 
-    if (!firstTeam || !secondTeam || !winnerTeam) {
-      this.errorMessage = "Please fill out all required fields correctly.";
+    const secondTeam = this.teams.find(
+      (team) => team.teamId === Number(value.secondTeamId)
+    );
+
+    const winnerTeam = this.teams.find(
+      (team) => team.teamId === Number(value.winnerTeamId)
+    );
+
+    if (!firstTeam || !secondTeam) {
+      this.errorMessage = "Please select both teams correctly.";
+      return;
+    }
+
+    if (Number(value.firstTeamId) === Number(value.secondTeamId)) {
+      this.errorMessage = "First Team and Second Team cannot be the same.";
+      return;
+    }
+
+    if (value.status === "Played" && !winnerTeam) {
+      this.errorMessage = "Please select winner team for played match.";
       return;
     }
 
@@ -75,16 +117,18 @@ export class MatchCreateComponent implements OnInit {
       secondTeam,
       new Date(value.matchDate),
       value.venue,
-      value.result,
+      value.status === "Played" ? value.result : "Not Played Yet",
       value.status,
-      winnerTeam
+      value.status === "Played" ? winnerTeam! : null as any
     );
+
+    console.log("MATCH PAYLOAD:", this.match);
 
     this.iplService.addMatch(this.match).subscribe({
       next: () => {
-        this.successMessage = "Match created successfully!";
         this.resetForm();
         this.successMessage = "Match created successfully!";
+        this.errorMessage = "";
       },
       error: (error) => {
         this.handleError(error);
@@ -99,8 +143,8 @@ export class MatchCreateComponent implements OnInit {
       secondTeamId: "",
       matchDate: "",
       venue: "",
-      result: "",
       status: "",
+      result: "",
       winnerTeamId: ""
     });
 
@@ -109,6 +153,8 @@ export class MatchCreateComponent implements OnInit {
   }
 
   handleError(error: any): void {
+    console.log("MATCH ERROR:", error);
+
     this.errorMessage =
       error?.error?.message || "Please fill out all required fields correctly.";
   }

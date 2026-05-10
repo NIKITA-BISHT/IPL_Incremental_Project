@@ -1,10 +1,23 @@
-<div class="ticketbooking-form-container">
+<div class="form-container">
   <h2>Book Tickets</h2>
 
   <form [formGroup]="ticketBookingForm" (ngSubmit)="onSubmit()">
+
     <div class="form-group">
       <label for="email">Email</label>
-      <input id="email" type="email" formControlName="email" />
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="Enter email"
+      />
+
+      <small
+        class="error-text"
+        *ngIf="ticketBookingForm.get('email')?.invalid && ticketBookingForm.get('email')?.touched"
+      >
+        Please enter a valid email.
+      </small>
     </div>
 
     <div class="form-group">
@@ -15,6 +28,13 @@
           {{ match.matchId }} - {{ match.venue }} - {{ match.matchDate | date }}
         </option>
       </select>
+
+      <small
+        class="error-text"
+        *ngIf="ticketBookingForm.get('matchId')?.invalid && ticketBookingForm.get('matchId')?.touched"
+      >
+        Please select a match.
+      </small>
     </div>
 
     <div class="form-group">
@@ -23,21 +43,30 @@
         id="numberOfTickets"
         type="number"
         formControlName="numberOfTickets"
+        placeholder="Enter number of tickets"
       />
+
+      <small
+        class="error-text"
+        *ngIf="ticketBookingForm.get('numberOfTickets')?.invalid && ticketBookingForm.get('numberOfTickets')?.touched"
+      >
+        Number of tickets must be at least 1.
+      </small>
     </div>
 
     <div class="button-group">
       <button type="submit">Book Tickets</button>
-      <button type="button" (click)="resetForm()">Reset</button>
+      <button type="button" class="reset-btn" (click)="resetForm()">Reset</button>
       <a routerLink="/ipl/dashboard">Dashboard</a>
     </div>
+
   </form>
 
-  <div class="success-message" *ngIf="successMessage">
+  <p class="success-message" *ngIf="successMessage">
     {{ successMessage }}
-  </div>
+  </p>
 
-  <div class="error-message" *ngIf="errorMessage">
+  <p class="error-message" *ngIf="errorMessage">
     {{ errorMessage }}
-  </div>
+  </p>
 </div>

@@ -20,13 +20,15 @@ export class AuthService {
           if (response.token) {
             localStorage.setItem("token", response.token);
           }
-
           if (response.roles) {
             localStorage.setItem("role", response.roles);
           }
-
           if (response.userId) {
             localStorage.setItem("userId", response.userId.toString());
+          }
+          // Save the username typed at login so we can look up the email later
+          if ((user as any).username) {
+            localStorage.setItem("username", (user as any).username);
           }
         })
       );
@@ -52,5 +54,7 @@ export class AuthService {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("userId");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userEmail");
   }
 }

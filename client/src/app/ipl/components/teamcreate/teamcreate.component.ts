@@ -54,8 +54,6 @@ export class TeamCreateComponent {
 
     this.iplService.addTeam(this.team).subscribe({
       next: () => {
-        this.successMessage = "Team created successfully!";
-        this.errorMessage = null;
         this.resetForm();
         this.successMessage = "Team created successfully!";
         this.errorMessage = null;

@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { Router } from "@angular/router";
+import { Router, NavigationEnd } from "@angular/router";
+import { filter } from "rxjs/operators";
 
 @Component({
   selector: "app-navbar",
@@ -13,12 +14,20 @@ export class NavBarComponent implements OnInit {
 
   ngOnInit(): void {
     this.role = localStorage.getItem("role");
+
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.role = localStorage.getItem("role");
+      });
   }
 
   logout(): void {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("userId");
-    this.router.navigate(["/auth/login"]);
+    localStorage.removeItem("username");
+    localStorage.removeItem("userEmail");
+    this.router.navigate(["/auth"]);
   }
 }

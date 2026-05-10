@@ -1,10 +1,16 @@
-<div class="match-form-container">
+<div class="form-container">
   <h2>Create Match</h2>
 
   <form [formGroup]="matchForm" (ngSubmit)="onSubmit()">
+
     <div class="form-group">
       <label for="matchId">Match ID</label>
-      <input id="matchId" type="number" formControlName="matchId" />
+      <input
+        id="matchId"
+        type="number"
+        formControlName="matchId"
+        placeholder="Enter match ID"
+      />
     </div>
 
     <div class="form-group">
@@ -29,25 +35,49 @@
 
     <div class="form-group">
       <label for="matchDate">Match Date</label>
-      <input id="matchDate" type="date" formControlName="matchDate" />
+      <input
+        id="matchDate"
+        type="date"
+        formControlName="matchDate"
+      />
     </div>
 
     <div class="form-group">
       <label for="venue">Venue</label>
-      <input id="venue" type="text" formControlName="venue" />
-    </div>
-
-    <div class="form-group">
-      <label for="result">Result</label>
-      <input id="result" type="text" formControlName="result" />
+      <input
+        id="venue"
+        type="text"
+        formControlName="venue"
+        placeholder="Enter venue"
+      />
     </div>
 
     <div class="form-group">
       <label for="status">Status</label>
-      <input id="status" type="text" formControlName="status" />
+      <select id="status" formControlName="status">
+        <option value="">Select Status</option>
+        <option value="Upcoming">Upcoming</option>
+        <option value="Played">Played</option>
+      </select>
     </div>
 
-    <div class="form-group">
+    <div
+      class="form-group"
+      *ngIf="matchForm.get('status')?.value === 'Played'"
+    >
+      <label for="result">Result</label>
+      <input
+        id="result"
+        type="text"
+        formControlName="result"
+        placeholder="Enter result"
+      />
+    </div>
+
+    <div
+      class="form-group"
+      *ngIf="matchForm.get('status')?.value === 'Played'"
+    >
       <label for="winnerTeamId">Winner Team</label>
       <select id="winnerTeamId" formControlName="winnerTeamId">
         <option value="">Select Winner Team</option>
@@ -59,16 +89,17 @@
 
     <div class="button-group">
       <button type="submit">Submit</button>
-      <button type="button" (click)="resetForm()">Reset</button>
+      <button type="button" class="reset-btn" (click)="resetForm()">Reset</button>
       <a routerLink="/ipl/dashboard">Dashboard</a>
     </div>
+
   </form>
 
-  <div class="success-message" *ngIf="successMessage">
+  <p class="success-message" *ngIf="successMessage">
     {{ successMessage }}
-  </div>
+  </p>
 
-  <div class="error-message" *ngIf="errorMessage">
+  <p class="error-message" *ngIf="errorMessage">
     {{ errorMessage }}
-  </div>
+  </p>
 </div>

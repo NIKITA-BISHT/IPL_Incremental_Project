@@ -1,18 +1,18 @@
-import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-
-import { IplService } from "../../services/ipl.service";
-import { Vote } from "../../types/Vote";
-import { Team } from "../../types/Team";
-import { Cricketer } from "../../types/Cricketer";
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Vote } from '../../types/Vote';
+import { Team } from '../../types/Team';
+import { Cricketer } from '../../types/Cricketer';
+import { IplService } from '../../services/ipl.service';
 
 @Component({
-  selector: "app-vote",
-  templateUrl: "./vote.component.html",
-  styleUrls: ["./vote.component.scss"]
+  selector: 'app-vote',
+  templateUrl: './vote.component.html',
+  styleUrls: ['./vote.component.scss']
 })
 export class VoteComponent implements OnInit {
-  voteForm: FormGroup;
+
+  voteForm!: FormGroup;
   vote: Vote | null = null;
 
   successMessage: string | null = null;
@@ -22,62 +22,30 @@ export class VoteComponent implements OnInit {
   cricketers: Cricketer[] = [];
 
   constructor(
-    private formBuilder: FormBuilder,
+    private fb: FormBuilder,
     private iplService: IplService
-  ) {
-    this.voteForm = this.formBuilder.group({
-      voteId: [null],
-
-      email: ["", [Validators.required, Validators.email]],
-      userEmail: [""],
-      voterEmail: [""],
-      emailId: [""],
-      emailAddress: [""],
-
-      category: ["", Validators.required],
-      selectedCategory: [""],
-      voteCategory: [""],
-      favoriteCategory: [""],
-      categoryName: [""],
-
-      cricketerId: [""],
-      selectedCricketerId: [""],
-      favoriteCricketerId: [""],
-      playerId: [""],
-      cricketer: [""],
-      selectedCricketer: [""],
-
-      teamId: [""],
-      selectedTeamId: [""],
-      favoriteTeamId: [""],
-      team: [""],
-      selectedTeam: [""],
-
-      votedForId: [""],
-      candidateId: [""],
-      nomineeId: [""],
-      entityId: [""],
-      selectedId: [""],
-      favoriteId: [""],
-
-      voteFor: [""],
-      voteForId: [""],
-      voteForType: [""],
-      selectedType: [""],
-      favoriteType: [""]
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
+    this.voteForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      category: ['', Validators.required],
+      cricketerId: [''],
+      teamId: ['']
+    });
+
     this.loadTeams();
     this.loadCricketers();
-    this.listenToCategoryChanges();
+
+    this.voteForm.get('category')?.valueChanges.subscribe((category) => {
+      this.updateValidators(category);
+    });
   }
 
   loadTeams(): void {
     this.iplService.getAllTeams().subscribe({
-      next: (teams: Team[]) => {
-        this.teams = teams;
+      next: (data: Team[]) => {
+        this.teams = data;
       },
       error: () => {
         this.teams = [];
@@ -87,8 +55,8 @@ export class VoteComponent implements OnInit {
 
   loadCricketers(): void {
     this.iplService.getAllCricketers().subscribe({
-      next: (cricketers: Cricketer[]) => {
-        this.cricketers = cricketers;
+      next: (data: Cricketer[]) => {
+        this.cricketers = data;
       },
       error: () => {
         this.cricketers = [];
@@ -96,188 +64,92 @@ export class VoteComponent implements OnInit {
     });
   }
 
-  onSubmit(): void {
-    this.clearMessages();
-
-    const voteData = this.getVoteFormData();
-
-    if (!voteData.email || !voteData.category) {
-      this.showValidationError();
-      return;
-    }
-
-    this.vote = new Vote(
-      voteData.voteId,
-      voteData.email,
-      voteData.category,
-      voteData.cricketerId,
-      voteData.teamId
-    );
-
-    this.castVote();
-  }
-
-  resetForm(): void {
-    this.voteForm.reset({
-      voteId: null,
-
-      email: "",
-      userEmail: "",
-      voterEmail: "",
-      emailId: "",
-      emailAddress: "",
-
-      category: "",
-      selectedCategory: "",
-      voteCategory: "",
-      favoriteCategory: "",
-      categoryName: "",
-
-      cricketerId: "",
-      selectedCricketerId: "",
-      favoriteCricketerId: "",
-      playerId: "",
-      cricketer: "",
-      selectedCricketer: "",
-
-      teamId: "",
-      selectedTeamId: "",
-      favoriteTeamId: "",
-      team: "",
-      selectedTeam: "",
-
-      votedForId: "",
-      candidateId: "",
-      nomineeId: "",
-      entityId: "",
-      selectedId: "",
-      favoriteId: "",
-
-      voteFor: "",
-      voteForId: "",
-      voteForType: "",
-      selectedType: "",
-      favoriteType: ""
-    });
-
-    this.vote = null;
-    this.clearMessages();
-  }
-
-  private listenToCategoryChanges(): void {
-    this.voteForm.get("category")?.valueChanges.subscribe((category: string) => {
-      this.updateValidators(category);
-    });
-  }
-
-  private updateValidators(category: string): void {
-    const cricketerControl = this.voteForm.get("cricketerId");
-    const teamControl = this.voteForm.get("teamId");
+  updateValidators(category: string): void {
+    const cricketerControl = this.voteForm.get('cricketerId');
+    const teamControl = this.voteForm.get('teamId');
 
     cricketerControl?.clearValidators();
     teamControl?.clearValidators();
 
-    if (category === "Cricketer") {
-      cricketerControl?.setValidators([Validators.required]);
-    }
-
-    if (category === "Team") {
+    if (category === 'Team') {
       teamControl?.setValidators([Validators.required]);
+      cricketerControl?.setValue('');
+    } else if (
+      category === 'Batsman' ||
+      category === 'Bowler' ||
+      category === 'All-rounder' ||
+      category === 'Wicketkeeper'
+    ) {
+      cricketerControl?.setValidators([Validators.required]);
+      teamControl?.setValue('');
+    } else {
+      cricketerControl?.setValue('');
+      teamControl?.setValue('');
     }
 
     cricketerControl?.updateValueAndValidity();
     teamControl?.updateValueAndValidity();
   }
 
-  private castVote(): void {
-    if (!this.vote) {
-      this.showValidationError();
+  onSubmit(): void {
+    this.successMessage = null;
+    this.errorMessage = null;
+
+    if (this.voteForm.invalid) {
+      this.errorMessage = 'Please fill out all required fields correctly.';
+      this.voteForm.markAllAsTouched();
       return;
     }
 
+    const value = this.voteForm.value;
+
+    let cricketerId: number | null = null;
+    let teamId: number | null = null;
+
+    if (value.category === 'Team') {
+      teamId = Number(value.teamId);
+      cricketerId = null;
+    } else {
+      cricketerId = Number(value.cricketerId);
+      teamId = null;
+    }
+
+    this.vote = new Vote(
+      0,
+      value.email,
+      value.category,
+      cricketerId || 0,
+      teamId || 0
+    );
+
+    this.vote.cricketerId = cricketerId;
+    this.vote.teamId = teamId;
+
+    console.log('Vote Payload:', this.vote);
+
     this.iplService.createVote(this.vote).subscribe({
       next: () => {
-        this.successMessage = "Vote casted successfully!";
+        this.resetForm();
+        this.successMessage = 'Vote submitted successfully!';
         this.errorMessage = null;
       },
       error: (error) => {
-        this.errorMessage =
-          error?.error?.message || "Please fill out all required fields correctly.";
+        console.log('Vote Error:', error);
+        this.errorMessage = 'Failed to submit vote. Please try again.';
         this.successMessage = null;
       }
     });
   }
 
-  private getVoteFormData(): {
-    voteId: number;
-    email: string;
-    category: string;
-    cricketerId: number;
-    teamId: number;
-  } {
-    const value = this.voteForm.value;
+  resetForm(): void {
+    this.voteForm.reset({
+      email: '',
+      category: '',
+      cricketerId: '',
+      teamId: ''
+    });
 
-    return {
-      voteId: value.voteId,
-
-      email:
-        value.email ||
-        value.userEmail ||
-        value.voterEmail ||
-        value.emailId ||
-        value.emailAddress,
-
-      category:
-        value.category ||
-        value.selectedCategory ||
-        value.voteCategory ||
-        value.favoriteCategory ||
-        value.categoryName ||
-        value.voteForType ||
-        value.selectedType ||
-        value.favoriteType,
-
-      cricketerId:
-        value.cricketerId ||
-        value.selectedCricketerId ||
-        value.favoriteCricketerId ||
-        value.playerId ||
-        value.cricketer ||
-        value.selectedCricketer ||
-        value.votedForId ||
-        value.candidateId ||
-        value.nomineeId ||
-        value.entityId ||
-        value.selectedId ||
-        value.favoriteId ||
-        value.voteForId ||
-        value.voteFor,
-
-      teamId:
-        value.teamId ||
-        value.selectedTeamId ||
-        value.favoriteTeamId ||
-        value.team ||
-        value.selectedTeam ||
-        value.votedForId ||
-        value.candidateId ||
-        value.nomineeId ||
-        value.entityId ||
-        value.selectedId ||
-        value.favoriteId ||
-        value.voteForId ||
-        value.voteFor
-    };
-  }
-
-  private showValidationError(): void {
-    this.errorMessage = "Please fill out all required fields correctly.";
-    this.successMessage = null;
-    this.voteForm.markAllAsTouched();
-  }
-
-  private clearMessages(): void {
-    this.successMessage = null;
+    this.vote = null;
     this.errorMessage = null;
   }
 }

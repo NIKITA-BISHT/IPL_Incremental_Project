@@ -2,8 +2,8 @@ export class Vote {
     voteId: number;
     email: string;
     category: string;
-    cricketerId: number;
-    teamId: number;
+    cricketerId: number|null;
+    teamId: number|null;
 
     constructor(
         voteId: number,

@@ -1,19 +1,84 @@
 .navbar {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 12px 20px;
-  background-color: #222;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 60px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.navbar a {
-  color: white;
+.navbar-brand .brand-link {
+  color: #e94560;
   text-decoration: none;
-  font-weight: 600;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
-.navbar button {
-  margin-left: auto;
-  padding: 6px 12px;
+.navbar-links {
+  display: flex;
+  align-items: center;
+}
+
+.nav-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-link {
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.role-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  background: #e94560;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.logout-btn {
+  background: transparent;
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.logout-btn:hover {
+  background: #e94560;
+  color: #fff;
+  border-color: #e94560;
 }

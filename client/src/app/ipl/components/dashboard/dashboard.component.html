@@ -1,14 +1,13 @@
-
 <app-navbar></app-navbar>
 
 <div class="dashboard-container">
-  <h2>IPL Dashboard</h2>
 
-  <section>
-    <h3>Teams</h3>
-
-    <a *ngIf="isAdmin()" routerLink="/ipl/teamcreate">Add Team</a>
-
+  <!-- Teams Section -->
+  <section class="card">
+    <div class="section-header">
+      <h3>🏟 Teams</h3>
+      <a *ngIf="role !== 'USER'" routerLink="/ipl/teamcreate" class="add-btn">+ Add Team</a>
+    </div>
     <table>
       <thead>
         <tr>
@@ -16,33 +15,33 @@
           <th>Team Name</th>
           <th>Location</th>
           <th>Owner</th>
-          <th *ngIf="isAdmin()">Actions</th>
+          <th *ngIf="role !== 'USER'">Actions</th>
         </tr>
       </thead>
-
       <tbody>
         <tr *ngFor="let team of teams">
           <td>{{ team.teamId }}</td>
           <td>{{ team.teamName }}</td>
           <td>{{ team.location }}</td>
           <td>{{ team.ownerName }}</td>
-
-          <td *ngIf="isAdmin()">
-            <a [routerLink]="['/ipl/teamedit', team.teamId]">Edit</a>
-            <button type="button" (click)="deleteTeam(team.teamId)">
-              Delete
-            </button>
+          <td *ngIf="role !== 'USER'" class="action-cell">
+            <a [routerLink]="['/ipl/teamedit', team.teamId]" class="edit-btn">✏ Edit</a>
+            <button class="delete-btn" (click)="deleteTeam(team.teamId)">🗑 Delete</button>
           </td>
+        </tr>
+        <tr *ngIf="teams.length === 0">
+          <td colspan="5">No teams found.</td>
         </tr>
       </tbody>
     </table>
   </section>
 
-  <section>
-    <h3>Cricketers</h3>
-
-    <a *ngIf="isAdmin()" routerLink="/ipl/cricketercreate">Add Cricketer</a>
-
+  <!-- Cricketers Section -->
+  <section class="card">
+    <div class="section-header">
+      <h3>🏏 Cricketers</h3>
+      <a *ngIf="role !== 'USER'" routerLink="/ipl/cricketercreate" class="add-btn">+ Add Cricketer</a>
+    </div>
     <table>
       <thead>
         <tr>
@@ -50,49 +49,65 @@
           <th>Name</th>
           <th>Age</th>
           <th>Team</th>
+          <th *ngIf="role !== 'USER'">Actions</th>
         </tr>
       </thead>
-
       <tbody>
         <tr *ngFor="let cricketer of cricketers">
           <td>{{ cricketer.cricketerId }}</td>
           <td>{{ cricketer.cricketerName }}</td>
           <td>{{ cricketer.age }}</td>
           <td>{{ cricketer.team?.teamName || cricketer.teamId }}</td>
+          <td *ngIf="role !== 'USER'" class="action-cell">
+            <a [routerLink]="['/ipl/cricketeredit', cricketer.cricketerId]" class="edit-btn">✏ Edit</a>
+            <button class="delete-btn" (click)="deleteCricketer(cricketer.cricketerId)">🗑 Delete</button>
+          </td>
+        </tr>
+        <tr *ngIf="cricketers.length === 0">
+          <td colspan="5">No cricketers found.</td>
         </tr>
       </tbody>
     </table>
   </section>
 
-  <section>
-    <h3>Matches</h3>
-
-    <a *ngIf="isAdmin()" routerLink="/ipl/matchcreate">Add Match</a>
-
+  <!-- Matches Section -->
+  <section class="card">
+    <div class="section-header">
+      <h3>📅 Matches</h3>
+      <a *ngIf="role !== 'USER'" routerLink="/ipl/matchcreate" class="add-btn">+ Add Match</a>
+    </div>
     <table>
       <thead>
         <tr>
           <th>Match ID</th>
           <th>Date</th>
           <th>Venue</th>
-          <th>Status</th>
+          <th *ngIf="role !== 'USER'">Actions</th>
         </tr>
       </thead>
-
       <tbody>
         <tr *ngFor="let match of matches">
           <td>{{ match.matchId }}</td>
           <td>{{ match.matchDate | date }}</td>
           <td>{{ match.venue }}</td>
-          <td>{{ match.status }}</td>
+          <td *ngIf="role !== 'USER'" class="action-cell">
+            <a [routerLink]="['/ipl/matchedit', match.matchId]" class="edit-btn">✏ Edit</a>
+            <button class="delete-btn" (click)="deleteMatch(match.matchId)">🗑 Delete</button>
+          </td>
+        </tr>
+        <tr *ngIf="matches.length === 0">
+          <td colspan="4">No matches found.</td>
         </tr>
       </tbody>
     </table>
   </section>
 
-  <section>
-    <h3>Votes</h3>
-
+  <!-- Votes Section -->
+  <section class="card">
+    <div class="section-header">
+      <h3>🗳 Votes</h3>
+      <a *ngIf="role === 'USER'" routerLink="/ipl/vote" class="add-btn">+ Cast a Vote</a>
+    </div>
     <table>
       <thead>
         <tr>
@@ -103,45 +118,48 @@
           <th>Team ID</th>
         </tr>
       </thead>
-
       <tbody>
         <tr *ngFor="let vote of votes">
           <td>{{ vote.voteId }}</td>
           <td>{{ vote.email }}</td>
           <td>{{ vote.category }}</td>
-          <td>{{ vote.cricketerId }}</td>
-          <td>{{ vote.teamId }}</td>
+          <td>{{ getVoteCricketerId(vote) }}</td>
+          <td>{{ getVoteTeamId(vote) }}</td>
+        </tr>
+        <tr *ngIf="votes.length === 0">
+          <td colspan="5">No votes found.</td>
         </tr>
       </tbody>
     </table>
   </section>
 
-  <section>
-    <h3>View My Ticket Bookings</h3>
-
-    <form [formGroup]="emailForm" (ngSubmit)="onSubmitEmail()">
-      <input type="email" formControlName="email" placeholder="Enter email" />
-      <button type="submit">View Bookings</button>
-    </form>
-
+  <!-- Ticket Bookings Section -->
+  <section class="card">
+    <div class="section-header">
+      <h3>🎟 Ticket Bookings</h3>
+      <a *ngIf="role === 'USER'" routerLink="/ipl/ticketbooking" class="add-btn">+ Book Tickets</a>
+    </div>
     <table>
       <thead>
         <tr>
           <th>Booking ID</th>
           <th>Email</th>
           <th>Match ID</th>
-          <th>Number Of Tickets</th>
+          <th>Number of Tickets</th>
         </tr>
       </thead>
-
       <tbody>
-        <tr *ngFor="let booking of ticketsBooked">
+        <tr *ngFor="let booking of ticketBookings">
           <td>{{ booking.bookingId }}</td>
           <td>{{ booking.email }}</td>
           <td>{{ booking.matchId }}</td>
           <td>{{ booking.numberOfTickets }}</td>
         </tr>
+        <tr *ngIf="ticketBookings.length === 0">
+          <td colspan="4">No ticket bookings found.</td>
+        </tr>
       </tbody>
     </table>
   </section>
+
 </div>

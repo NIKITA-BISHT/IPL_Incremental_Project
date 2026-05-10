@@ -1,10 +1,23 @@
-<div class="vote-form-container">
+<div class="form-container">
   <h2>Submit Vote</h2>
 
   <form [formGroup]="voteForm" (ngSubmit)="onSubmit()">
+
     <div class="form-group">
       <label for="email">Email</label>
-      <input id="email" type="email" formControlName="email" />
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="Enter email"
+      />
+
+      <small
+        class="error-text"
+        *ngIf="voteForm.get('email')?.invalid && voteForm.get('email')?.touched"
+      >
+        Please enter a valid email.
+      </small>
     </div>
 
     <div class="form-group">
@@ -17,9 +30,19 @@
         <option value="All-rounder">All-rounder</option>
         <option value="Wicketkeeper">Wicketkeeper</option>
       </select>
+
+      <small
+        class="error-text"
+        *ngIf="voteForm.get('category')?.invalid && voteForm.get('category')?.touched"
+      >
+        Please select a category.
+      </small>
     </div>
 
-    <div class="form-group">
+    <div
+      class="form-group"
+      *ngIf="voteForm.get('category')?.value === 'Team'"
+    >
       <label for="teamId">Team</label>
       <select id="teamId" formControlName="teamId">
         <option value="">Select Team</option>
@@ -27,30 +50,56 @@
           {{ team.teamName }}
         </option>
       </select>
+
+      <small
+        class="error-text"
+        *ngIf="voteForm.get('teamId')?.invalid && voteForm.get('teamId')?.touched"
+      >
+        Please select a team.
+      </small>
     </div>
 
-    <div class="form-group">
+    <div
+      class="form-group"
+      *ngIf="
+        voteForm.get('category')?.value === 'Batsman' ||
+        voteForm.get('category')?.value === 'Bowler' ||
+        voteForm.get('category')?.value === 'All-rounder' ||
+        voteForm.get('category')?.value === 'Wicketkeeper'
+      "
+    >
       <label for="cricketerId">Cricketer</label>
       <select id="cricketerId" formControlName="cricketerId">
         <option value="">Select Cricketer</option>
-        <option *ngFor="let cricketer of cricketers" [value]="cricketer.cricketerId">
+        <option
+          *ngFor="let cricketer of cricketers"
+          [value]="cricketer.cricketerId"
+        >
           {{ cricketer.cricketerName }}
         </option>
       </select>
+
+      <small
+        class="error-text"
+        *ngIf="voteForm.get('cricketerId')?.invalid && voteForm.get('cricketerId')?.touched"
+      >
+        Please select a cricketer.
+      </small>
     </div>
 
     <div class="button-group">
       <button type="submit">Submit Vote</button>
-      <button type="button" (click)="resetForm()">Reset</button>
+      <button type="button" class="reset-btn" (click)="resetForm()">Reset</button>
       <a routerLink="/ipl/dashboard">Dashboard</a>
     </div>
+
   </form>
 
-  <div class="success-message" *ngIf="successMessage">
+  <p class="success-message" *ngIf="successMessage">
     {{ successMessage }}
-  </div>
+  </p>
 
-  <div class="error-message" *ngIf="errorMessage">
+  <p class="error-message" *ngIf="errorMessage">
     {{ errorMessage }}
-  </div>
+  </p>
 </div>

@@ -1,31 +1,23 @@
 <nav class="navbar">
-  <ul class="navbar-list">
-    <li>
-      <a routerLink="/ipl/dashboard" class="nav-link app-name">IPL</a>
-    </li>
+  <div class="navbar-brand">
+    <a routerLink="/ipl/dashboard" class="brand-link">🏏 IPL Manager</a>
+  </div>
 
-    <li *ngIf="role !== 'USER'">
-      <a routerLink="/ipl/teamcreate" class="nav-link">Add New Team</a>
-    </li>
+  <div class="navbar-links">
+    <div *ngIf="role !== 'USER'" class="nav-group">
+      <a routerLink="/ipl/teamcreate" class="nav-link">+ Team</a>
+      <a routerLink="/ipl/cricketercreate" class="nav-link">+ Cricketer</a>
+      <a routerLink="/ipl/matchcreate" class="nav-link">+ Match</a>
+    </div>
 
-    <li *ngIf="role !== 'USER'">
-      <a routerLink="/ipl/cricketercreate" class="nav-link">Add New Cricketer</a>
-    </li>
+    <div *ngIf="role === 'USER'" class="nav-group">
+      <a routerLink="/ipl/vote" class="nav-link">🗳 Vote</a>
+      <a routerLink="/ipl/ticketbooking" class="nav-link">🎟 Book Tickets</a>
+    </div>
+  </div>
 
-    <li *ngIf="role !== 'USER'">
-      <a routerLink="/ipl/matchcreate" class="nav-link">Add New Match</a>
-    </li>
-
-    <li *ngIf="role === 'USER'">
-      <a routerLink="/ipl/vote" class="nav-link">Vote</a>
-    </li>
-
-    <li *ngIf="role === 'USER'">
-      <a routerLink="/ipl/ticketbooking" class="nav-link">Book Tickets</a>
-    </li>
-
-    <li>
-      <button type="button" class="logout-btn" (click)="logout()">Logout</button>
-    </li>
-  </ul>
+  <div class="navbar-right">
+    <span class="role-badge">{{ role }}</span>
+    <button class="logout-btn" type="button" (click)="logout()">Logout</button>
+  </div>
 </nav>
