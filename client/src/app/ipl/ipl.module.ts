@@ -12,14 +12,22 @@ import { MatchCreateComponent } from "./components/matchcreate/matchcreate.compo
 import { VoteComponent } from "./components/vote/vote.component";
 import { TicketBookingComponent } from "./components/ticketbooking/ticketbooking.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
+import { NavBarComponent } from "../shared/navbar/navbar.component";
+import { SharedModule } from "../shared/shared.module";
+import { TeamEditComponent } from "./components/teamedit/teamedit.component";
+import { CricketerEditComponent } from "./components/cricketeredit/cricketeredit.component";
+import { MatchEditComponent } from "./components/matchedit/matchedit.component";
 
 @NgModule({
   declarations: [
     DashboardComponent,
     TeamCreateComponent,
+    TeamEditComponent,
     CricketerArrayComponent,
     CricketerCreateComponent,
+    CricketerEditComponent,
     MatchCreateComponent,
+    MatchEditComponent,
     VoteComponent,
     TicketBookingComponent
   ],
@@ -27,13 +35,16 @@ import { DashboardComponent } from "./components/dashboard/dashboard.component";
     CommonModule,
     ReactiveFormsModule,
     HttpClientModule,
-    IplRoutingModule
+    IplRoutingModule,
+    SharedModule
   ],
   exports: [
     DashboardComponent,
     TeamCreateComponent,
+    TeamEditComponent,
     CricketerArrayComponent,
     CricketerCreateComponent,
+    CricketerEditComponent,
     MatchCreateComponent,
     VoteComponent,
     TicketBookingComponent

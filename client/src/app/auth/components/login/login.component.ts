@@ -1,5 +1,7 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, Optional } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Router } from "@angular/router";
+
 import { AuthService } from "../../services/auth.service";
 
 @Component({
@@ -14,7 +16,8 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    @Optional() private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -57,6 +60,8 @@ export class LoginComponent implements OnInit {
       next: () => {
         this.successMessage = "Login successful!";
         this.errorMessage = "";
+
+        this.router.navigate(["/ipl/dashboard"]);
       },
       error: () => {
         this.errorMessage = "Invalid username or password.";

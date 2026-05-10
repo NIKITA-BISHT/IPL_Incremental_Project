@@ -1,0 +1,42 @@
+<div class="team-edit-container">
+  <h2>Edit Team</h2>
+
+  <form [formGroup]="teamForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="teamName">Team Name</label>
+      <input id="teamName" type="text" formControlName="teamName" />
+    </div>
+
+    <div class="form-group">
+      <label for="location">Location</label>
+      <input id="location" type="text" formControlName="location" />
+    </div>
+
+    <div class="form-group">
+      <label for="ownerName">Owner Name</label>
+      <input id="ownerName" type="text" formControlName="ownerName" />
+    </div>
+
+    <div class="form-group">
+      <label for="establishmentYear">Establishment Year</label>
+      <input
+        id="establishmentYear"
+        type="number"
+        formControlName="establishmentYear"
+      />
+    </div>
+
+    <div class="button-group">
+      <button type="submit">Update Team</button>
+      <a routerLink="/ipl/dashboard">Dashboard</a>
+    </div>
+  </form>
+
+  <div class="success-message" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <div class="error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+</div>

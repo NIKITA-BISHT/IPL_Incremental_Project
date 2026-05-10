@@ -1,3 +1,4 @@
+
 <app-navbar></app-navbar>
 
 <div class="dashboard-container">
@@ -5,6 +6,9 @@
 
   <section>
     <h3>Teams</h3>
+
+    <a *ngIf="isAdmin()" routerLink="/ipl/teamcreate">Add Team</a>
+
     <table>
       <thead>
         <tr>
@@ -12,14 +16,23 @@
           <th>Team Name</th>
           <th>Location</th>
           <th>Owner</th>
+          <th *ngIf="isAdmin()">Actions</th>
         </tr>
       </thead>
+
       <tbody>
         <tr *ngFor="let team of teams">
           <td>{{ team.teamId }}</td>
           <td>{{ team.teamName }}</td>
           <td>{{ team.location }}</td>
           <td>{{ team.ownerName }}</td>
+
+          <td *ngIf="isAdmin()">
+            <a [routerLink]="['/ipl/teamedit', team.teamId]">Edit</a>
+            <button type="button" (click)="deleteTeam(team.teamId)">
+              Delete
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -27,6 +40,9 @@
 
   <section>
     <h3>Cricketers</h3>
+
+    <a *ngIf="isAdmin()" routerLink="/ipl/cricketercreate">Add Cricketer</a>
+
     <table>
       <thead>
         <tr>
@@ -36,6 +52,7 @@
           <th>Team</th>
         </tr>
       </thead>
+
       <tbody>
         <tr *ngFor="let cricketer of cricketers">
           <td>{{ cricketer.cricketerId }}</td>
@@ -49,19 +66,80 @@
 
   <section>
     <h3>Matches</h3>
+
+    <a *ngIf="isAdmin()" routerLink="/ipl/matchcreate">Add Match</a>
+
     <table>
       <thead>
         <tr>
           <th>Match ID</th>
           <th>Date</th>
           <th>Venue</th>
+          <th>Status</th>
         </tr>
       </thead>
+
       <tbody>
         <tr *ngFor="let match of matches">
           <td>{{ match.matchId }}</td>
           <td>{{ match.matchDate | date }}</td>
           <td>{{ match.venue }}</td>
+          <td>{{ match.status }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h3>Votes</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Vote ID</th>
+          <th>Email</th>
+          <th>Category</th>
+          <th>Cricketer ID</th>
+          <th>Team ID</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let vote of votes">
+          <td>{{ vote.voteId }}</td>
+          <td>{{ vote.email }}</td>
+          <td>{{ vote.category }}</td>
+          <td>{{ vote.cricketerId }}</td>
+          <td>{{ vote.teamId }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h3>View My Ticket Bookings</h3>
+
+    <form [formGroup]="emailForm" (ngSubmit)="onSubmitEmail()">
+      <input type="email" formControlName="email" placeholder="Enter email" />
+      <button type="submit">View Bookings</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Booking ID</th>
+          <th>Email</th>
+          <th>Match ID</th>
+          <th>Number Of Tickets</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let booking of ticketsBooked">
+          <td>{{ booking.bookingId }}</td>
+          <td>{{ booking.email }}</td>
+          <td>{{ booking.matchId }}</td>
+          <td>{{ booking.numberOfTickets }}</td>
         </tr>
       </tbody>
     </table>

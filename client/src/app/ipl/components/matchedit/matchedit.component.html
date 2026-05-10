@@ -1,0 +1,69 @@
+<div class="match-edit-container">
+  <h2>Edit Match</h2>
+
+  <form [formGroup]="matchForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="firstTeamId">First Team</label>
+      <select id="firstTeamId" formControlName="firstTeamId">
+        <option value="">Select First Team</option>
+        <option *ngFor="let team of teams" [value]="team.teamId">
+          {{ team.teamName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="secondTeamId">Second Team</label>
+      <select id="secondTeamId" formControlName="secondTeamId">
+        <option value="">Select Second Team</option>
+        <option *ngFor="let team of teams" [value]="team.teamId">
+          {{ team.teamName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="matchDate">Match Date</label>
+      <input id="matchDate" type="date" formControlName="matchDate" />
+    </div>
+
+    <div class="form-group">
+      <label for="venue">Venue</label>
+      <input id="venue" type="text" formControlName="venue" />
+    </div>
+
+    <div class="form-group">
+      <label for="result">Result</label>
+      <input id="result" type="text" formControlName="result" />
+    </div>
+
+    <div class="form-group">
+      <label for="status">Status</label>
+      <input id="status" type="text" formControlName="status" />
+    </div>
+
+    <div class="form-group">
+      <label for="winnerTeamId">Winner Team</label>
+      <select id="winnerTeamId" formControlName="winnerTeamId">
+        <option value="">Select Winner Team</option>
+        <option *ngFor="let team of teams" [value]="team.teamId">
+          {{ team.teamName }}
+        </option>
+      </select>
+    </div>
+
+    <div class="button-group">
+      <button type="submit">Update Match</button>
+      <button type="button" (click)="resetForm()">Reset</button>
+      <a routerLink="/ipl/dashboard">Dashboard</a>
+    </div>
+  </form>
+
+  <div class="success-message" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <div class="error-message" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+</div>
